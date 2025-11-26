@@ -14,35 +14,22 @@ import scala.collection.mutable.Map
   *   a basic description of the area (typically not including information about
   *   items)
   */
-class Area(var name: String, var description: String):
-  private var items = Map[String, Item]()
-  private val neighbors = Map[String, Area]()
 
-  /** Returns the area that can be reached from this area by moving in the given
-    * direction. The result is returned in an `Option`; `None` is returned if
-    * there is no exit in the given direction.
-    */
-  def neighbor(direction: String) = this.neighbors
-    .map((name, area) => (name.toLowerCase(), area))
-    .get(direction)
-
-  /** Adds an exit from this area to the given area. The neighboring area is
-    * reached by moving in the specified direction from this area.
-    */
-  def setNeighbor(direction: String, neighbor: Area) =
-    this.neighbors += direction -> neighbor
-
-  /** Adds exits from this area to the given areas. Calling this method is
-    * equivalent to calling the `setNeighbor` method on each of the given
-    * direction–area pairs.
-    * @param exits
-    *   contains pairs consisting of a direction and the neighboring area in
-    *   that direction
-    * @see
-    *   [[setNeighbor]]
-    */
-  def setNeighbors(exits: Vector[(String, Area)]) =
-    this.neighbors ++= exits
+/* We changed up the area logic so that they aren't connected together
+ * by directions, but instead each room has a unique name. I belive this
+ * makes the game easier to follow. */
+class Area(var name: String, var description: String) extends Named:
+  var items = Vector[Item]()
+  var neighbors = Set[Area]()
+  var areaElements = Vector[AreaElement]()
+  var foes = Vector[Foe]()
+  def addItem(i: Item) = items = items :+ i
+  def removeItem(i: Item) = items = items.filterNot(_ == i)
+  def addNeighbor(area: Area) = neighbors = neighbors + area
+  def addFoe(foe: Foe) = foes = foes :+ foe
+  def removeFoe(foe: Foe) = foes = foes.filterNot(_ == foe)
+  def addAreaElement(element: AreaElement) =
+    areaElements = areaElements :+ element
 
   /** Returns a multi-line description of the area as a player sees it. This
     * includes a basic description of the area as well as information about
@@ -54,15 +41,27 @@ class Area(var name: String, var description: String):
     * arbitrary order.
     */
   def fullDescription: String =
-    val itemList =
-      if items.isEmpty then ""
-      else "\nYou see here: " + this.items.keys.mkString(", ")
-    val exitList = "\n\nExits available: " + this.neighbors.keys.mkString(", ")
-    this.description + itemList + exitList
-
-  def addItem(i: Item) = items += i.name -> i
-  def contains(i: String) = items.contains(i)
-  def removeItem(i: String) = items.remove(i)
+    val areaElements = Some(
+      this.areaElements
+        .map(_.description)
+        .mkString("\n")
+    ).filter(_.nonEmpty).getOrElse("")
+    val itemsAvailable =
+      if (this.items.isEmpty) ""
+      else
+        "\nYou see here: " + this.items
+          .map(_.name)
+          .mkString(", ")
+    val exitsAvailable =
+      "\n\nExits available: " + this.neighbors
+        .map(_.name)
+        .mkString(", ")
+    val aliveFoes = this.foes.filterNot(_.isDefeated)
+    val foesPresent =
+      if aliveFoes.isEmpty then ""
+      else
+        "\nBeware!! You see an enemy! " + aliveFoes.map(_.info).mkString(", ")
+    this.description + " " + areaElements + itemsAvailable + exitsAvailable + foesPresent
 
   /** Returns a single-line description of the area for debugging purposes. */
   override def toString =

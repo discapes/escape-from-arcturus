@@ -1,5 +1,0 @@
-Find ship part 1 & 2, engine part 1 & 2 and exit through where you came in (research facility).
-Check cheaters map for the locations of the parts.
-Throughout the map, you can find oxygen tanks to refill your oxygen levels to 10.
-Every command uses 1 oxygen level. Try not to waste your oxygen levels.
-When oxygen level reaches 0, you die.

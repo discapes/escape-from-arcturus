@@ -13,13 +13,13 @@ import scala.util.Random
   * are identical to each other. To create other kinds of adventure games, you
   * will need to modify or replace the source code of this class.
   */
-class Adventure:
+class Adventure(val difficultyLevel: DifficultyLevel):
 
   /** the name of the game */
-  val title = "An Abandoned Space Station Adventure"
+  val title = "Escape from Arcturus-7"
 
   private val researchFacility = Area(
-    "Reseach Facility",
+    "Research Facility",
     "Flickering monitors cast pale light over overturned carts and shattered glass. Whatever they were studying, they left in a hurry."
   )
   private val eastHallway = Area(
@@ -27,15 +27,15 @@ class Adventure:
     "A narrow corridor stretches ahead, walls scarred by tool marks and emergency lighting pulsing weakly along the floor."
   )
   private val airlockA = Area(
-    "Airlock to Hangers 01-02",
+    "Airlock Alpha",
     "The chamber is silent, its inner door half-open. A faint draft whispers through, carrying the smell of stale vacuum seals."
   )
-  private val hanger01 = Area(
-    "Hanger 01",
+  private val hangar01 = Area(
+    "Hangar 01",
     "The large bay echoes with every step. Empty clamps and broken cargo crates suggest a ship once rested here."
   )
-  private val hanger02 = Area(
-    "Hanger 02",
+  private val hangar02 = Area(
+    "Hangar 02",
     "Dim floodlights reveal scattered mech parts and a dangling crane hook swaying gently in still air."
   )
   private val northHallway = Area(
@@ -43,7 +43,7 @@ class Adventure:
     "Cold air circulates loudly through exposed vents, and a sluggish service drone lies powered down along the wall."
   )
   private val engineRoomB = Area(
-    "Engine Room B",
+    "Engine Room Beta",
     "Dark coolant stains cover the grated floor. A massive reactor housing looms ahead, silent but ominously warm."
   )
   private val controlRoom = Area(
@@ -55,19 +55,19 @@ class Adventure:
     "Loose ceiling panels clatter softly above, disturbed by the station’s slow, rhythmic shudder."
   )
   private val engineRoomA = Area(
-    "Engine Room A",
+    "Engine Room Alpha",
     "A maze of pipes and dormant thrusters crowds the chamber. Tools lie abandoned beside an open maintenance hatch."
   )
   private val airlockB = Area(
-    "Airlock to Command and Private Hangers",
+    "Airlock Bravo",
     "This airlock’s outer door is sealed tight, reinforced with manual clamps someone added in a panic."
   )
-  private val hangerCommand = Area(
-    "Command Hanger",
+  private val hangarCommand = Area(
+    "Command Hangar",
     "Large enough to house a flagship, the cavernous room is lined with dark command pods and empty fuel tracks."
   )
-  private val hangerPrivate = Area(
-    "Private hanger",
+  private val hangarPrivate = Area(
+    "Private Hangar",
     "This smaller bay is cluttered with personal lockers, scattered schematics, and a covered craft that someone never returned to uncover."
   )
   private val westHallway = Area(
@@ -91,170 +91,111 @@ class Adventure:
     researchFacility,
     eastHallway,
     airlockA,
-    hanger01,
-    hanger02,
+    hangar01,
+    hangar02,
     northHallway,
     engineRoomB,
     controlRoom,
     southHallway,
     engineRoomA,
     airlockB,
-    hangerCommand,
-    hangerPrivate,
+    hangarCommand,
+    hangarPrivate,
     westHallway,
     waterProcessing,
     wasteProcessing,
     oxygenProcessing
   )
-  private val destination = researchFacility
 
-  researchFacility.setNeighbors(
-    Vector(
-      "back" -> eastHallway
-    )
-  )
-
-  eastHallway.setNeighbors(
-    Vector(
-      "airlock" -> airlockA,
-      "northHallway" -> northHallway,
-      "researchFacility" -> researchFacility
-    )
-  )
-
-  airlockA.setNeighbors(
-    Vector(
-      "hanger01" -> hanger01,
-      "hanger02" -> hanger02,
-      "eastHallway" -> eastHallway,
-      "northHallway" -> northHallway
-    )
-  )
-
-  hanger01.setNeighbors(
-    Vector(
-      "back" -> airlockA
-    )
-  )
-
-  hanger02.setNeighbors(
-    Vector(
-      "back" -> airlockA
-    )
-  )
-
-  northHallway.setNeighbors(
-    Vector(
-      "eastHallway" -> eastHallway,
-      "engineRoomB" -> engineRoomB,
-      "controlRoom" -> controlRoom
-    )
-  )
-
-  engineRoomB.setNeighbors(
-    Vector(
-      "back" -> northHallway
-    )
-  )
-
-  controlRoom.setNeighbors(
-    Vector(
-      "northHallway" -> northHallway,
-      "southHallway" -> southHallway
-    )
-  )
-
-  southHallway.setNeighbors(
-    Vector(
-      "controlRoom" -> controlRoom,
-      "engineRoomA" -> engineRoomA,
-      "airlock" -> airlockB,
-      "westHallway" -> westHallway
-    )
-  )
-
-  engineRoomA.setNeighbors(
-    Vector(
-      "back" -> southHallway
-    )
-  )
-
-  airlockB.setNeighbors(
-    Vector(
-      "southHallway" -> southHallway,
-      "westHallway" -> westHallway,
-      "commandHanger" -> hangerCommand,
-      "privateHanger" -> hangerPrivate
-    )
-  )
-
-  hangerCommand.setNeighbors(
-    Vector(
-      "back" -> airlockB
-    )
-  )
-
-  hangerPrivate.setNeighbors(
-    Vector(
-      "back" -> airlockB
-    )
-  )
-
-  westHallway.setNeighbors(
-    Vector(
-      "southHallway" -> southHallway,
-      "airlock" -> airlockB,
-      "waterProcessing" -> waterProcessing,
-      "oxygenProcessing" -> oxygenProcessing,
-      "wasteProcessing" -> wasteProcessing
-    )
-  )
-
-  waterProcessing.setNeighbors(
-    Vector(
-      "back" -> westHallway
-    )
-  )
-
-  oxygenProcessing.setNeighbors(
-    Vector(
-      "back" -> westHallway
-    )
-  )
-
-  wasteProcessing.setNeighbors(
-    Vector(
-      "back" -> westHallway
-    )
-  )
-
-  hanger01.addItem(Item("ship part 1", "Ship part 1"))
-  engineRoomB.addItem(Item("engine part 1", "Engine part 1"))
-  engineRoomA.addItem(Item("engine part 2", "Engine part 2"))
-  wasteProcessing.addItem(Item("ship part 2", "Ship part 2"))
-
-  Random
-    .shuffle(locations)
-    .take(5)
-    .foreach(_.addItem(Item("oxygen tank", "Oxygen tank")))
+  val player = Player(hangar02, difficultyLevel, this)
+  val slimeMonster = new SlimeMonster(hangarPrivate, player)
+  val allFoes = Vector(slimeMonster)
+  val spaceship = new Spaceship
 
   /** The character that the player controls in the game. */
-  val player = Player(researchFacility)
 
   /** The number of turns that have passed since the start of the game. */
   var turnCount = 0
 
-  /** The maximum number of turns that this adventure game allows before time
-    * runs out.
-    */
+  researchFacility.addNeighbor(eastHallway)
+
+  eastHallway.addNeighbor(researchFacility)
+  eastHallway.addNeighbor(airlockA)
+  eastHallway.addNeighbor(northHallway)
+
+  airlockA.addNeighbor(eastHallway)
+  airlockA.addNeighbor(northHallway)
+  airlockA.addNeighbor(hangar01)
+  airlockA.addNeighbor(hangar02)
+
+  hangar01.addNeighbor(airlockA)
+  hangar02.addNeighbor(airlockA)
+
+  northHallway.addNeighbor(eastHallway)
+  northHallway.addNeighbor(engineRoomB)
+  northHallway.addNeighbor(controlRoom)
+  northHallway.addNeighbor(airlockA)
+
+  engineRoomB.addNeighbor(northHallway)
+
+  controlRoom.addNeighbor(northHallway)
+  controlRoom.addNeighbor(southHallway)
+
+  southHallway.addNeighbor(controlRoom)
+  southHallway.addNeighbor(engineRoomA)
+  southHallway.addNeighbor(airlockB)
+  southHallway.addNeighbor(westHallway)
+
+  engineRoomA.addNeighbor(southHallway)
+
+  airlockB.addNeighbor(southHallway)
+  airlockB.addNeighbor(westHallway)
+  airlockB.addNeighbor(hangarCommand)
+  airlockB.addNeighbor(hangarPrivate)
+
+  hangarCommand.addNeighbor(airlockB)
+
+  hangarPrivate.addNeighbor(airlockB)
+
+  westHallway.addNeighbor(southHallway)
+  westHallway.addNeighbor(airlockB)
+  westHallway.addNeighbor(waterProcessing)
+  westHallway.addNeighbor(oxygenProcessing)
+  westHallway.addNeighbor(wasteProcessing)
+
+  waterProcessing.addNeighbor(westHallway)
+  oxygenProcessing.addNeighbor(westHallway)
+  wasteProcessing.addNeighbor(westHallway)
+
+  hangar01.addItem(EngineParts.fluxCapacitor)
+  engineRoomB.addItem(EngineParts.antimatterInjector)
+  engineRoomA.addItem(EngineParts.gravimetricStabilizer)
+  wasteProcessing.addItem(EngineParts.naniteActuator)
+
+  hangar02.addAreaElement(spaceship)
+
+  airlockA.addItem(difficultyLevel.weaponAvailable)
+
+  Random
+    .shuffle(locations)
+    .take(5)
+    .zip(
+      Vector(
+        new BigOxygenTank,
+        new RegularOxygenTank,
+        new RegularOxygenTank,
+        new SmallOxygenTank,
+        new MiniOxygenTank
+      )
+    )
+    .foreach((area, tank) => area.addItem(tank))
+
+  hangarPrivate.addFoe(slimeMonster)
 
   /** Determines if the adventure is complete, that is, if the player has won.
     */
-  def isComplete = this.player.location == this.destination
-    && player.has("ship part 1")
-    && player.has("ship part 2")
-    && player.has("engine part 1")
-    && player.has("engine part 2")
+  def isComplete = this.player.location.areaElements.contains(spaceship) &&
+    spaceship.fullyRepaired
 
   /** Determines whether the player has won, lost, or quit, thereby ending the
     * game.
@@ -266,7 +207,35 @@ class Adventure:
     * of the game.
     */
   def welcomeMessage =
-    "An abandoned station floats in the void, beacon offline, crew unaccounted for. Your ship is dying, and the answers you need are somewhere inside. \nStep carefully. Something here still breathes in the dark."
+    """
+
+
+Three weeks ago, the deep-space relay station Arcturus-7 went silent.
+  
+  The Galactic Union dispatched you—a freelance salvage operative—to investigate
+  the blackout and recover any survivors or critical data. The station had been
+  conducting classified research on an alien artifact recovered from a derelict
+  vessel near the Kepler Veil. No distress signal. No explanation. Just silence.
+  
+  Your ship touched down in Hangar 02 without incident. You sealed your helmet,
+  cycled the airlock, and stepped onto the deck. The station's atmosphere had long
+  since vented—no air, no sound, just the eerie stillness of hard vacuum. At least
+  the gravity generator still worked; your boots clung reassuringly to the deck
+  plating. For better or worse, you wouldn't be floating.
+  
+  You had taken only a few steps when motion caught your eye. Above you, a lattice
+  of corroded support beams shifted. In the soundless void you could only watch as
+  tons of debris broke free and plummeted—straight onto your ship. The hull
+  crumpled in silent, agonizing slow-motion. Sparks flared and died instantly in
+  the vacuum. By the time the dust settled, your vessel was a wreck: flux capacitor
+  shattered, antimatter injector cracked, gravimetric stabilizer bent beyond use,
+  and the nanite actuator crushed to scrap.
+  
+  Without those four components, you're stranded. Fortunately, a station this size must have spare parts somewhere.
+  
+  Your suit's oxygen is limited. Moving and picking up items consumes oxygen.
+  Explore carefully, scavenge what you need, and get off this station before you become
+  another name on its manifest of the lost.""".stripMargin
 
   /** Returns a message that is to be displayed to the player at the end of the
     * game. The message will be different depending on whether the player has
@@ -276,7 +245,7 @@ class Adventure:
     if this.isComplete then
       "You made it out alive. Against all odds, you survived."
     else if player.oxygenLevel <= 0 then
-      "Your breath grows thin. The emergency gauge hits zero.\nThe station’s corridors blur as the cold creeps in, and your body finally gives way.\nYour ship remains broken. The station claims another soul."
+      "Your breath grows thin. The emergency gauge hits zero.\nThe station's corridors blur as the cold creeps in, and your body finally gives way.\nYour ship remains broken. The station claims another soul."
     else // game over due to player quitting
       "Quitter!"
 
@@ -286,12 +255,18 @@ class Adventure:
     */
   def playTurn(command: String): String =
     val action = Action(command)
-    val outcomeReport = action.execute(this.player) match {
+    var outcomeReport = ""
+    action.execute(this.player) match {
       case Some(outcome) =>
         this.turnCount += 1
-        player.oxygenLevel -= 1
-        outcome + s"\nCurrent oxygen level: ${player.oxygenLevel}"
-      case None => s"""Unknown command: "$command"."""
+        outcomeReport += outcome
+        outcomeReport += s"\n\nCurrent oxygen level: ${player.oxygenLevelPercent}%."
+        for foe <- allFoes do
+          if !foe.isDefeated then
+            val foeActionReport = foe.turn()
+            if foeActionReport.nonEmpty then
+              outcomeReport += "\n" + foeActionReport
+      case None => outcomeReport = s"""Unknown command: "$command"."""
     }
     outcomeReport
 

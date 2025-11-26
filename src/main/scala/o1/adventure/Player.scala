@@ -11,13 +11,22 @@ import scala.collection.mutable.Map
   * @param startingArea
   *   the player’s initial location
   */
-class Player(startingArea: Area):
+class Player(
+    startingArea: Area,
+    difficultyLevel: DifficultyLevel,
+    val adventure: Adventure
+):
 
   private var currentLocation =
     startingArea // gatherer: changes in relation to the previous location
   private var quitCommandGiven = false // one-way flag
-  private var items = Map[String, Item]()
-  var oxygenLevel = 10
+  var items = Vector[Item]()
+  def consumables = items.collect { case c: Consumable => c }
+  def weapons = items.collect { case w: Weapon => w }
+
+  val maxOxygenLevel = difficultyLevel.maxOxygen
+  var oxygenLevel = maxOxygenLevel
+  def oxygenLevelPercent = ((oxygenLevel.toDouble / maxOxygenLevel) * 100).round
 
   /** Determines if the player has indicated a desire to quit the game. */
   def hasQuit = this.quitCommandGiven
@@ -31,50 +40,80 @@ class Player(startingArea: Area):
     * can't go DIRECTION."
     */
   def go(direction: String) =
-    val destination = this.location.neighbor(direction)
-    this.currentLocation = destination.getOrElse(this.currentLocation)
-    if destination.isDefined then s"You go $direction."
-    else s"You can't go $direction."
+    Utils.findByName(this.location.neighbors, direction) match {
+      case Some(area) =>
+        this.currentLocation = area
+        this.oxygenLevel -= 1
+        s"You go to the ${area.name}."
+      case None => s"You can't go $direction."
+    }
 
   def use(i: String) =
-    items.filter(_._2.isConsumable).remove(i) match
-      case Some(value) =>
-        oxygenLevel = 10
-        s"You used the $i."
-      case None =>
-        "No such consumeable item."
+    Utils.findByName(this.items, i) match {
+      case Some(item) =>
+        item match {
+          case consumable: Consumable =>
+            val (consumeReport, wasConsumed) = consumable.consumeAction(this)
+            if wasConsumed then
+              this.items = this.items.filterNot(_ == consumable)
+            consumeReport
+          case _ => s"The ${item.name} is not something you can use."
+        }
+      case None => s"You don't have that item."
+    }
 
-  def has(i: String) = items.contains(i)
+  def fire(i: String) =
+    Utils.findByName(this.items, i) match {
+      case Some(item) =>
+        item match {
+          case weapon: Weapon =>
+            if this.location.foes.isEmpty then
+              s"There are no foes here to fire at."
+            else
+              val foe = this.location.foes.head
+              val result = weapon.fireAt(foe)
+              if foe.isDefeated then this.location.removeFoe(foe)
+              result
+          case _ => s"The ${item.name} is not a weapon you can fire."
+        }
+      case None => s"You don't have that item."
+    }
+
   def inventory =
     if items.isEmpty then "You are empty-handed."
-    else s"You are carrying:\n${items.keys.mkString("\n")}"
+    else
+      s"You are carrying:\n${items.map(item => s"- ${item.name}").mkString("\n")}"
 
   def get(i: String) =
-    location.removeItem(i) match {
-      case Some(value) =>
-        items += i -> value
-        s"You pick up the $i."
+    Utils.findByName(this.location.items, i) match {
+      case Some(item) =>
+        this.items = this.items :+ item
+        this.location.items = this.location.items.filterNot(_ == item)
+        this.oxygenLevel -= 1
+        s"You pick up the ${item.name}. ${item.description}"
       case None => s"There is no $i here to pick up."
     }
+
   def examine(i: String) =
-    items.get(i) match {
-      case Some(value) =>
-        s"You look closely at the ${value.name}.\n${value.description}"
-      case None =>
-        "If you want to examine something, you need to pick it up first."
+    Utils.findByName(this.items, i) match {
+      case Some(value) => value.description
+      case None        => "You don't have that item."
     }
+
   def drop(i: String) =
-    items.remove(i) match {
-      case Some(value) =>
-        location.addItem(value)
-        s"You drop the $i."
-      case None => "You don't have that!"
+    Utils.findByName(this.items, i) match {
+      case Some(item) =>
+        this.items = this.items.filterNot(_ == item)
+        this.location.items = this.location.items :+ item
+        s"You drop the ${item.name}."
+      case None => "You don't have that item."
     }
 
   /** Causes the player to rest for a short while (this has no substantial
     * effect in game terms). Returns a description of what happened.
     */
-  def rest() = "You rest for a while. Better get a move on, though."
+  def rest() =
+    "You rest for a while. Better get a move on, though. Air is running low."
 
   /** Signals that the player wants to quit the game. Returns a description of
     * what happened within the game as a result (which is the empty string, in

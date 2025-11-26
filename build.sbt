@@ -6,6 +6,5 @@ lazy val root = project
     name := "o1-tekstipeli",
     version := "0.1.0-SNAPSHOT",
     scalaVersion := scala3Version,
-    libraryDependencies += "org.scala-lang.modules" %% "scala-swing" % "3.0.0",
     Compile / mainClass := Some("o1.adventure.ui.AdventureTextUI")
   )
