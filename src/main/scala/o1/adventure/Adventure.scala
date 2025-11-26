@@ -286,9 +286,13 @@ class Adventure:
     */
   def playTurn(command: String): String =
     val action = Action(command)
-    val outcomeReport = action.execute(this.player)
-    if outcomeReport.isDefined then this.turnCount += 1
-    player.oxygenLevel -= 1
-    outcomeReport.getOrElse(s"""Unknown command: "$command".""")
+    val outcomeReport = action.execute(this.player) match {
+      case Some(outcome) =>
+        this.turnCount += 1
+        player.oxygenLevel -= 1
+        outcome + s"\nCurrent oxygen level: ${player.oxygenLevel}"
+      case None => s"""Unknown command: "$command"."""
+    }
+    outcomeReport
 
 end Adventure
