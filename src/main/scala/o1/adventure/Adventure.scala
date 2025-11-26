@@ -18,71 +18,71 @@ class Adventure:
 
   private val researchFacility = Area(
     "Reseach Facility",
-    "You are somewhere in the forest. There are a lot of trees here.\nBirds are singing."
+    "Flickering monitors cast pale light over overturned carts and shattered glass. Whatever they were studying, they left in a hurry."
   )
   private val eastHallway = Area(
     "East Hallway",
-    "You are somewhere in the forest. A tangle of bushes blocks further passage north.\nBirds are singing."
+    "A narrow corridor stretches ahead, walls scarred by tool marks and emergency lighting pulsing weakly along the floor."
   )
   private val airlockA = Area(
     "Airlock to Hangers 01-02",
-    "The forest just goes on and on."
+    "The chamber is silent, its inner door half-open. A faint draft whispers through, carrying the smell of stale vacuum seals."
   )
   private val hanger01 = Area(
     "Hanger 01",
-    "You are at a small clearing in the middle of forest.\nNearly invisible, twisted paths lead in many directions."
+    "The large bay echoes with every step. Empty clamps and broken cargo crates suggest a ship once rested here."
   )
   private val hanger02 = Area(
     "Hanger 02",
-    "You are in a dense tangle of bushes. It's hard to see exactly where you're going."
+    "Dim floodlights reveal scattered mech parts and a dangling crane hook swaying gently in still air."
   )
   private val northHallway = Area(
     "North Hallway",
-    "Home sweet home! Now the only thing you need is a working remote control."
+    "Cold air circulates loudly through exposed vents, and a sluggish service drone lies powered down along the wall."
   )
   private val engineRoomB = Area(
     "Engine Room B",
-    "Home sweet home! Now the only thing you need is a working remote control."
+    "Dark coolant stains cover the grated floor. A massive reactor housing looms ahead, silent but ominously warm."
   )
   private val controlRoom = Area(
     "Control Room",
-    "Home sweet home! Now the only thing you need is a working remote control."
+    "Dead screens wrap around the central console. A lone blinking indicator stubbornly flashes, waiting for a signal that will never come."
   )
   private val southHallway = Area(
     "South Hallway",
-    "Home sweet home! Now the only thing you need is a working remote control."
+    "Loose ceiling panels clatter softly above, disturbed by the station’s slow, rhythmic shudder."
   )
   private val engineRoomA = Area(
     "Engine Room A",
-    "Home sweet home! Now the only thing you need is a working remote control."
+    "A maze of pipes and dormant thrusters crowds the chamber. Tools lie abandoned beside an open maintenance hatch."
   )
   private val airlockB = Area(
     "Airlock to Command and Private Hangers",
-    "Home sweet home! Now the only thing you need is a working remote control."
+    "This airlock’s outer door is sealed tight, reinforced with manual clamps someone added in a panic."
   )
   private val hangerCommand = Area(
     "Command Hanger",
-    "Home sweet home! Now the only thing you need is a working remote control."
+    "Large enough to house a flagship, the cavernous room is lined with dark command pods and empty fuel tracks."
   )
   private val hangerPrivate = Area(
     "Private hanger",
-    "Home sweet home! Now the only thing you need is a working remote control."
+    "This smaller bay is cluttered with personal lockers, scattered schematics, and a covered craft that someone never returned to uncover."
   )
   private val westHallway = Area(
     "West Hallway",
-    "Home sweet home! Now the only thing you need is a working remote control."
+    "The corridor slopes slightly, lights buzzing as if struggling to stay alive. A soft vibration travels through the floorplates."
   )
   private val waterProcessing = Area(
     "Water Processing Facility",
-    "Home sweet home! Now the only thing you need is a working remote control."
+    "Rows of cracked filtration tanks drip steadily, echoing like a slow clock counting down the station’s final hours."
   )
   private val oxygenProcessing = Area(
     "Oxygen Processing Facility",
-    "Home sweet home! Now the only thing you need is a working remote control."
+    "Massive compressors stand idle, coated in frost. A low hiss resonates—a reminder that the air here is running out."
   )
   private val wasteProcessing = Area(
     "Waste Processing Facility",
-    "Home sweet home! Now the only thing you need is a working remote control."
+    "A foul chemical odor fills the chamber. Conveyor arms lie frozen mid-cycle, gripping a container that never completed its run."
   )
   private val destination = researchFacility
 
@@ -95,8 +95,8 @@ class Adventure:
   eastHallway.setNeighbors(
     Vector(
       "airlock" -> airlockA,
-      "north hallway" -> northHallway,
-      "research facility" -> researchFacility
+      "northHallway" -> northHallway,
+      "researchFacility" -> researchFacility
     )
   )
 
@@ -104,8 +104,8 @@ class Adventure:
     Vector(
       "hanger01" -> hanger01,
       "hanger02" -> hanger02,
-      "east hallway" -> eastHallway,
-      "north hallway" -> northHallway
+      "eastHallway" -> eastHallway,
+      "northHallway" -> northHallway
     )
   )
 
@@ -123,9 +123,9 @@ class Adventure:
 
   northHallway.setNeighbors(
     Vector(
-      "east hallway" -> eastHallway,
-      "engine room B" -> engineRoomB,
-      "control room" -> controlRoom
+      "eastHallway" -> eastHallway,
+      "engineRoomB" -> engineRoomB,
+      "controlRoom" -> controlRoom
     )
   )
 
@@ -137,26 +137,32 @@ class Adventure:
 
   controlRoom.setNeighbors(
     Vector(
-      "north hallway" -> northHallway,
-      "south hallway" -> southHallway
+      "northHallway" -> northHallway,
+      "southHallway" -> southHallway
     )
   )
 
   southHallway.setNeighbors(
     Vector(
-      "control room" -> controlRoom,
-      "engine room A" -> engineRoomA,
+      "controlRoom" -> controlRoom,
+      "engineRoomA" -> engineRoomA,
       "airlock" -> airlockB,
-      "west hallway" -> westHallway
+      "westHallway" -> westHallway
+    )
+  )
+
+  engineRoomA.setNeighbors(
+    Vector(
+      "leave" -> southHallway
     )
   )
 
   airlockB.setNeighbors(
     Vector(
-      "south hallway" -> southHallway,
-      "west hallway" -> westHallway,
-      "command hanger" -> hangerCommand,
-      "private hanger" -> hangerPrivate
+      "southHallway" -> southHallway,
+      "westHallway" -> westHallway,
+      "commandHanger" -> hangerCommand,
+      "privateHanger" -> hangerPrivate
     )
   )
 
@@ -174,11 +180,11 @@ class Adventure:
 
   westHallway.setNeighbors(
     Vector(
-      "south hallway" -> southHallway,
+      "southHallway" -> southHallway,
       "airlock" -> airlockB,
-      "water processing" -> waterProcessing,
-      "oxygen processing" -> oxygenProcessing,
-      "waste processing" -> wasteProcessing
+      "waterProcessing" -> waterProcessing,
+      "oxygenProcessing" -> oxygenProcessing,
+      "wasteProcessing" -> wasteProcessing
     )
   )
 
@@ -200,6 +206,11 @@ class Adventure:
     )
   )
 
+  hanger01.addItem(Item("ship part 1", "Ship part 1"))
+  engineRoomB.addItem(Item("engine part 1", "Engine part 1"))
+  engineRoomA.addItem(Item("engine part 2", "Engine part 2"))
+  wasteProcessing.addItem(Item("ship part 2", "Ship part 2"))
+
   /** The character that the player controls in the game. */
   val player = Player(researchFacility)
 
@@ -213,9 +224,11 @@ class Adventure:
 
   /** Determines if the adventure is complete, that is, if the player has won.
     */
-  def isComplete = this.player.location == this.destination && player.has(
-    "battery"
-  ) && player.has("remote")
+  def isComplete = this.player.location == this.destination
+    && player.has("ship part 1")
+    && player.has("ship part 2")
+    && player.has("engine part 1")
+    && player.has("engine part 2")
 
   /** Determines whether the player has won, lost, or quit, thereby ending the
     * game.
@@ -227,16 +240,17 @@ class Adventure:
     * of the game.
     */
   def welcomeMessage =
-    "You are lost in the woods. Find your way back home.\n\nBetter hurry, 'cause Scalatut elämät is on real soon now. And you can't miss Scalkkarit, right?"
+    "An abandoned station floats in the void, beacon offline, crew unaccounted for. Your ship is dying, and the answers you need are somewhere inside. \nStep carefully. Something here still breathes in the dark."
 
   /** Returns a message that is to be displayed to the player at the end of the
     * game. The message will be different depending on whether the player has
     * completed their quest.
     */
   def goodbyeMessage =
-    if this.isComplete then "Home at last... and phew, just in time! Well done!"
+    if this.isComplete then
+      "You made it out alive. Against all odds, you survived."
     else if this.turnCount == this.timeLimit then
-      "Oh no! Time's up. Starved of entertainment, you collapse and weep like a child.\nGame over!"
+      "Your breath grows thin. The emergency gauge hits zero.\nThe station’s corridors blur as the cold creeps in, and your body finally gives way.\nYour ship remains broken. The station claims another soul."
     else // game over due to player quitting
       "Quitter!"
 
