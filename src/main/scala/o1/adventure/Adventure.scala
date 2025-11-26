@@ -1,5 +1,7 @@
 package o1.adventure
 
+import scala.util.Random
+
 /** The class `Adventure` represents text adventure games. An adventure consists
   * of a player and a number of areas that make up the game world. It provides
   * methods for playing the game one turn at a time and for checking the state
@@ -14,7 +16,7 @@ package o1.adventure
 class Adventure:
 
   /** the name of the game */
-  val title = "A Forest Adventure"
+  val title = "An Abandoned Space Station Adventure"
 
   private val researchFacility = Area(
     "Reseach Facility",
@@ -84,11 +86,31 @@ class Adventure:
     "Waste Processing Facility",
     "A foul chemical odor fills the chamber. Conveyor arms lie frozen mid-cycle, gripping a container that never completed its run."
   )
+
+  private val locations = Vector(
+    researchFacility,
+    eastHallway,
+    airlockA,
+    hanger01,
+    hanger02,
+    northHallway,
+    engineRoomB,
+    controlRoom,
+    southHallway,
+    engineRoomA,
+    airlockB,
+    hangerCommand,
+    hangerPrivate,
+    westHallway,
+    waterProcessing,
+    wasteProcessing,
+    oxygenProcessing
+  )
   private val destination = researchFacility
 
   researchFacility.setNeighbors(
     Vector(
-      "leave" -> eastHallway
+      "back" -> eastHallway
     )
   )
 
@@ -111,13 +133,13 @@ class Adventure:
 
   hanger01.setNeighbors(
     Vector(
-      "leave" -> airlockA
+      "back" -> airlockA
     )
   )
 
   hanger02.setNeighbors(
     Vector(
-      "leave" -> airlockA
+      "back" -> airlockA
     )
   )
 
@@ -131,7 +153,7 @@ class Adventure:
 
   engineRoomB.setNeighbors(
     Vector(
-      "leave" -> northHallway
+      "back" -> northHallway
     )
   )
 
@@ -153,7 +175,7 @@ class Adventure:
 
   engineRoomA.setNeighbors(
     Vector(
-      "leave" -> southHallway
+      "back" -> southHallway
     )
   )
 
@@ -168,13 +190,13 @@ class Adventure:
 
   hangerCommand.setNeighbors(
     Vector(
-      "leave" -> airlockB
+      "back" -> airlockB
     )
   )
 
   hangerPrivate.setNeighbors(
     Vector(
-      "leave" -> airlockB
+      "back" -> airlockB
     )
   )
 
@@ -190,19 +212,19 @@ class Adventure:
 
   waterProcessing.setNeighbors(
     Vector(
-      "leave" -> westHallway
+      "back" -> westHallway
     )
   )
 
   oxygenProcessing.setNeighbors(
     Vector(
-      "leave" -> westHallway
+      "back" -> westHallway
     )
   )
 
   wasteProcessing.setNeighbors(
     Vector(
-      "leave" -> westHallway
+      "back" -> westHallway
     )
   )
 
@@ -210,6 +232,11 @@ class Adventure:
   engineRoomB.addItem(Item("engine part 1", "Engine part 1"))
   engineRoomA.addItem(Item("engine part 2", "Engine part 2"))
   wasteProcessing.addItem(Item("ship part 2", "Ship part 2"))
+
+  Random
+    .shuffle(locations)
+    .take(5)
+    .foreach(_.addItem(Item("oxygen tank", "Oxygen tank")))
 
   /** The character that the player controls in the game. */
   val player = Player(researchFacility)
@@ -220,7 +247,6 @@ class Adventure:
   /** The maximum number of turns that this adventure game allows before time
     * runs out.
     */
-  val timeLimit = 40
 
   /** Determines if the adventure is complete, that is, if the player has won.
     */
@@ -234,7 +260,7 @@ class Adventure:
     * game.
     */
   def isOver =
-    this.isComplete || this.player.hasQuit || this.turnCount == this.timeLimit
+    this.isComplete || this.player.hasQuit || player.oxygenLevel <= 0
 
   /** Returns a message that is to be displayed to the player at the beginning
     * of the game.
@@ -249,7 +275,7 @@ class Adventure:
   def goodbyeMessage =
     if this.isComplete then
       "You made it out alive. Against all odds, you survived."
-    else if this.turnCount == this.timeLimit then
+    else if player.oxygenLevel <= 0 then
       "Your breath grows thin. The emergency gauge hits zero.\nThe station’s corridors blur as the cold creeps in, and your body finally gives way.\nYour ship remains broken. The station claims another soul."
     else // game over due to player quitting
       "Quitter!"
@@ -262,6 +288,7 @@ class Adventure:
     val action = Action(command)
     val outcomeReport = action.execute(this.player)
     if outcomeReport.isDefined then this.turnCount += 1
+    player.oxygenLevel -= 1
     outcomeReport.getOrElse(s"""Unknown command: "$command".""")
 
 end Adventure

@@ -24,7 +24,7 @@ class Area(var name: String, var description: String):
     */
   def neighbor(direction: String) = this.neighbors
     .map((name, area) => (name.toLowerCase(), area))
-    .get(direction.toLowerCase())
+    .get(direction)
 
   /** Adds an exit from this area to the given area. The neighboring area is
     * reached by moving in the specified direction from this area.
@@ -56,13 +56,13 @@ class Area(var name: String, var description: String):
   def fullDescription: String =
     val itemList =
       if items.isEmpty then ""
-      else "\nYou see here: " + this.items.keys.mkString(" ")
+      else "\nYou see here: " + this.items.keys.mkString(", ")
     val exitList = "\n\nExits available: " + this.neighbors.keys.mkString(", ")
     this.description + itemList + exitList
 
   def addItem(i: Item) = items += i.name -> i
   def contains(i: String) = items.contains(i)
-  def removeItem(i: String) = items.remove(i.toLowerCase())
+  def removeItem(i: String) = items.remove(i)
 
   /** Returns a single-line description of the area for debugging purposes. */
   override def toString =

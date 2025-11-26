@@ -17,6 +17,7 @@ class Player(startingArea: Area):
     startingArea // gatherer: changes in relation to the previous location
   private var quitCommandGiven = false // one-way flag
   private var items = Map[String, Item]()
+  var oxygenLevel = 10
 
   /** Determines if the player has indicated a desire to quit the game. */
   def hasQuit = this.quitCommandGiven
@@ -34,6 +35,14 @@ class Player(startingArea: Area):
     this.currentLocation = destination.getOrElse(this.currentLocation)
     if destination.isDefined then s"You go $direction."
     else s"You can't go $direction."
+
+  def use(i: String) =
+    items.filter(_._2.isConsumable).remove(i) match
+      case Some(value) =>
+        oxygenLevel = 10
+        s"You used the $i."
+      case None =>
+        "No such consumeable item."
 
   def has(i: String) = items.contains(i)
   def inventory =
